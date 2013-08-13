@@ -37,15 +37,17 @@ Preferably a Linux of some kind, should work OK under Windows though.
 
 ## Installation
 
-1. Install dependencies, enable mod rewrite with `sudo a2enmod rewrite`
-2. Clone into a folder somewhere, e.g. 
+### Clone into a folder somewhere, e.g. 
 
 ```
 cd /var/www
 git clone https://github.com/strawp/autotrader-miner.git
 ```
 
-3. Configure Apache
+### Configure Apache
+  
+  (Optional if you just want to do headless mode using database directly)
+  
   * Enable _htaccess: 
 
 `$ sudo vim /etc/apache2/htaccess.conf`
@@ -75,7 +77,7 @@ Restart Apache:
 
 `sudo apache2ctl restart`
 
-4. Edit site settings
+### Edit site settings
 
 `$ vim /var/www/autotrader-miner/application/core/settings.php`
 
@@ -95,19 +97,27 @@ Add a user to that database:
 
 `mysql> exit`
 
-5. Initialise the database structure, noting the password for the admin user that is created for you as part of this process.
+### Initialise the database structure 
+
+noting the password for the admin user that is created for you as part of this process.
 
 `cd autotrader-miner/application/scripts`
 
 `php sync_db.php`
 
-6. Log in at whatever URL you deployed it to using the admin username / password the `sync_db.php` script created. If you missed that bit, 
+### Log in at whatever URL you deployed it to 
+
+using the admin username / password the `sync_db.php` script created. If you missed that bit, 
 at this stage you can just drop and recreate the schema for it to do it all again using `mysql> DROP SCHEMA cars`.
 
-7. OR run in headless mode. Add a search using e.g. `php scripts/addsearch.php http://www2.autotrader.co.uk/search/used/cars/postcode/cv12ue/radius/10/sort/default/onesearchad/used%2Cnearlynew%2Cnew`
+### OR run in headless mode. 
+
+Add a search using e.g. `php scripts/addsearch.php http://www2.autotrader.co.uk/search/used/cars/postcode/cv12ue/radius/10/sort/default/onesearchad/used%2Cnearlynew%2Cnew`
 then just query the database directly.
 
-8. Run the searches by running `php scripts/runsearches.php`. This will run all searches that haven't been run for more than 12 hours. Only car pages that aren't already in the DB will be scraped.
+### Run the searches 
+
+by running `php scripts/runsearches.php`. This will run all searches that haven't been run for more than 12 hours. Only car pages that aren't already in the DB will be scraped.
 
 
 
