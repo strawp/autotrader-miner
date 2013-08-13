@@ -28,7 +28,7 @@
     // Default (dev on Windows)
 	  default:
       define( "DB_HOST", "localhost" );
-      define( "DB_NAME", "cars2" );
+      define( "DB_NAME", "cars" );
       define( "DB_USER", "cars" );
       define( "DB_PASS", "cars" );
       
