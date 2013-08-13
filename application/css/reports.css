@@ -1,0 +1,435 @@
+
+/* Reports CSS */
+
+div.report {}
+  div.report table.main {
+    width: 100%;
+  }
+  @media print{
+    div.report div.dropdown {
+      display: none;
+    }
+  }
+     
+
+  
+  /* Systems review agenda report */
+  div.agenda h4#results { display: none; }
+    div.agenda ul.change_log {
+      margin-left: 2em;
+    }
+    div.agenda ol.issues {
+      list-style: lower-alpha;
+    }
+      ol.issues li.issue {
+        margin-bottom: 1em;
+      }
+    ol.issues li.issue h4 {}
+      ol.issues li.issue h4 a{
+        color: black;
+      }
+    ol.issues li.issue table {
+      border: 1px solid #ccc;
+      border-color: silver gray gray silver;
+      width: 100%;
+    }
+    ol.issues li.issue table.comments {
+      width: 99%;
+      margin-left: 1%;
+    }
+      ol.issues li.issue table.comments th,
+      ol.issues li.issue table.comments td {
+        border-top: 1px solid #ccc;
+      }
+      ol.issues li.issue table th {
+        width: 10%;
+      }
+      ol.issues li.issue table th,
+      ol.issues li.issue table td {
+        vertical-align: top;
+        padding: 0 0.2em;
+      }
+      ol.issues li.issue table td.comment,
+      ol.issues li.issue table tr.description td {
+        white-space: pre-wrap;
+      }
+    div.report div.section table { 
+      width: 100%;
+    }
+      div.report div.section table td { 
+        text-align: right;
+        padding-bottom: 1em;
+      }
+  div.report ul.year_page {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+    div.report ul.year_page li {
+      width: 50%;
+      float: left;
+      padding: 0;
+      margin: 0;
+      display: block;
+      height: 1em;
+    }
+    div.report ul.year_page li.next {
+      text-align: right;
+    }
+      div.report ul.year_page li a {
+        display: block;
+      }
+      div.report ul.year_page li.next a {
+        text-align: right;
+      }
+
+
+/* Generic reporting table */
+table.report { 
+  border-bottom: none; 
+  clear: left;
+}
+  table.report tr { 
+  }
+    table.report tr th { 
+      padding-top: 0.5em;
+      padding-bottom: 0.5em;
+      width: 10em;
+    }
+    table.report tr.header th { 
+      width: auto;
+      text-align: right;
+    }
+    table.report tr.subrow th { 
+      padding-left: 2em;
+      font-size: 80%;
+    }
+    table.report tr td { 
+      padding-top: 0.5em;
+      padding-bottom: 0.5em;
+      text-align: right;
+    }
+    table.report tr.header th.name,
+    table.report tr td.name {
+      text-align: left;
+    }
+    table.report tr.new_rae_uoa td,
+    table.report tr.new_arc_arg td,
+    table.report tr.new_rae_uoa th,
+    table.report tr.new_arc_arg th,
+    table.report tr.active td,
+    table.report tr.active th,
+    table.report tr.total_expected_income td,
+    table.report tr.pipeline td, 
+    table.report tr.totals td, 
+    table.report tr.total_expected_income th,
+    table.report tr.pipeline th, 
+    table.report tr.totals th { 
+      border-top: 1px solid black !important;
+    }
+    table.report tr.received td, 
+    table.report tr.received th { 
+      border-bottom: 1px solid black !important;
+    }
+    table.report tr.pct_active td,
+    table.report tr.pct_active th {
+    font-weight: bold;
+  }
+    table.report tr.footer td {
+      border-bottom: 3px double black !important;
+    }
+    table.report tr.pct_active td,
+    table.report tr.pct_active th,
+    table.report tr.totals td,
+    table.report tr.totals th { 
+      border-bottom: 3px double black !important;
+    }
+    table.print {}
+      table.print tr {}
+        table.print tr td {
+          padding: 0 0.5em 0 0.5em;
+          border-bottom: 1px solid black;
+        }
+    table.kpi {
+      border-bottom: 3px double black;
+    }
+      table.report tr th span.qlx {  
+        color: #DA7878;
+        display: block;
+        font-size: 90%;
+      }
+      table.report tr td br {
+        display: none;
+      }        
+      table.report tr td span.sum,  
+      table.report tr td span.count {  
+        display: block;
+        width: 100%;
+        border-bottom: 1px solid #ccc;
+      }
+      table.list tr th.highlight,
+      table.list tr td.highlight {
+        border: 3px solid red;
+      }
+      table.list tr td.highlight {
+        border-width: 0 3px 0 3px;
+      }
+      table.list tr th.highlight {
+        border-width: 3px 3px 0 3px;
+      }
+      table.list tr.totals td.highlight {
+        border: 3px solid red !important;
+        border-width: 0 3px 3px 3px !important;
+        border-top: 1px solid black !important;
+      }
+      table.list tr th.highlight {
+        border-width: 3px 3px 0 3px;
+      }
+
+
+table.toc {
+  width: 100%;
+}
+  table.toc tr {}
+    table.toc tr.header th,
+    table.toc tr td {
+      text-align: left;
+    }
+    table.toc tr th.page,
+    table.toc tr td.page {
+      text-align: right;
+    }
+    table.toc tr.newsection td {
+      padding-top: 1em;
+    }
+
+
+div.graph_holder {
+  clear: left;  
+}
+  div.graph_holder img {
+    display: block;
+    clear: left;
+  }
+  
+  ul#notes {
+    margin-top: 2em;
+  }
+  
+/* Table export option styles */
+div.report table.exportable {
+  margin-bottom: 0;
+}
+div.report p.tableoption {
+  margin-bottom: 1em;
+}
+  div.report p.tableoption a.export {
+    border: 1px solid grey;
+    padding: 0 0.5em 0.5em 25px;
+    margin: 0 0.1em 0 0.1em;
+    border-top: 0;
+    background-position: 5px center;
+    text-decoration: none;
+    background-color: #EBF3F5;
+    border-bottom-right-radius: 5px;
+    border-bottom-left-radius: 5px;
+  }
+  @media print {
+    div.report p.tableoption a.export {
+      display: none;
+    }
+  }
+
+/* Dashboard */
+div.dashboard {
+}
+div.dashboard div.vars {
+  display: none;
+}
+div.dashboard h3 {
+  background-color: #DAF4D9;
+  color: black;
+  border-radius: 4px;
+  padding-right: 15%;
+  width: 84%;
+  display: block;
+  border: none;
+  position: relative;
+  left: 0;
+  z-index: 0;
+}
+div.dashboard p.name {
+  margin: 0;
+  float: left;
+  width: 83%;
+  padding: 0 15% 1% 1%;
+}
+div.dashboard table#tblWidgets {
+  width: 100%;
+  border-spacing: 5px;
+}
+div.dashboard table#tblWidgets > tbody > tr > td {
+  width: 40%;
+  padding: 2px 1%;
+  vertical-align: top;
+  border-radius: 5px;
+  height: 4em;
+}
+div.dashboard table#tblWidgets tr > td.drop-target {
+  border: 1px dashed red;
+}
+div.dashboard table#tblWidgets tr > td.drop-hover {
+  background-color: #F3D6D6;
+  border-style: solid;
+}
+div.dashboard div.widget_container {
+  border: 1px solid gray;
+  margin: 0;
+  padding: 0;
+  border-radius: 5px;
+  float: left;
+  background-color: #F6FFF5;
+  width: 96%;
+}
+    div.dashboard div.widget_container div.content p {
+      padding-left: 1em;
+    }
+  div.dashboard div.widget_container div.options {
+    text-align: right;
+    width: 20%;
+    position: absolute;
+    float: right;
+    left: 0;
+    padding-left: 80%;
+    vertical-align: centre;
+    z-index: 1;
+  }
+  div.dashboard div.widget_container div.controls {
+    text-align: right;
+  }
+  div.dashboard div.widget_container div.ui-resizable-handle.highlight {
+    border-color: red;
+  }
+
+  div.dashboard div.widget_container table td {
+  }
+    div.dashboard div.widget_container table td a,
+    div.dashboard div.widget_container table td span {
+      display: inline;
+      white-space: normal;
+    }
+div.dashboard div.widget_container.ui-draggable-dragging {
+  cursor: move;
+}
+div.dashboard div.widget_container.busy {
+  opacity: 0.5;
+}
+div.dashboard p.option {
+  clear: both;
+  display: inline;
+  vertical-align: top;
+}
+  div.dashboard p.option button {
+    border: none;
+    background-color: transparent;
+    text-decoration: underline;
+    color: #0183AE;
+    font-size: 100%;
+    text-transform: none;
+    font-weight: normal;
+    display: inline;
+    padding: 0;
+  }
+  div.dashboard p.option button.minimise {
+    background: transparent url( ../img/icons/minimise.png ) bottom left no-repeat;
+  }
+  div.dashboard p.option button.maximise {
+    background: transparent url( ../img/icons/application.png ) center left no-repeat;
+  }
+  div.dashboard div.options p.option a,
+  div.dashboard div.options p.option button {
+    text-indent: -999em;
+    width: 18px !important;
+    height: 18px !important;
+    display: inline-block;
+    overflow: hidden;
+    padding: 0;
+    margin: 0;
+    text-align: left;
+    min-height: 0;
+    min-width: 0;
+  }
+
+@media print {
+  div.dashboard p.option {
+    display: none;
+  }
+}
+
+    
+div.dashboard div.my_reports ul.reports li {
+}
+  
+div.dashboard div.change_log {}
+  div.dashboard div.change_log ul.change_log {
+    width: 97%;
+    margin: 0 1% 1% 1%;
+  }
+
+  ul.widgets {
+    padding: 0;
+    margin: 0;
+  }
+    ul.widgets li {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      border: 1px solid gray;
+      margin: 0.5em 1%;
+      padding: 0.5em 0.5%;
+      width: 45%;
+      display: inline-block;
+      border-radius: 5px;
+      vertical-align: top;
+    }
+    div.dashboard div.dashboard_intro .content p {
+      margin: 1em;
+    }
+
+  div.dashboard div.widget_container input.help {
+    text-indent: -999em;
+    background: url( ../img/icons/help.png ) no-repeat;
+    width: 20px;
+    height: 20px;
+    border: none;
+    float: left;
+  }
+  div.dashboard div.widget_container div.help {
+    background: #F7FAFB;
+    position: absolute;
+    width: 20%;
+    border: #CCC 1px solid;
+    padding: 1em;
+    margin-top: 2em;
+  }
+    div.dashboard div.widget_container dl dt {
+      font-weight: bold;
+      margin-top: 1em;
+    }
+   div.dashboard div.widget_container dl dd {
+   }
+   div.dashboard div.widget_container ul.reminders {
+     list-style: none;
+     margin: 0;
+     padding: 1em 0;
+   }
+     div.dashboard div.widget_container ul.reminders li {
+       padding: 0 1em;
+     }
+      div.dashboard div.widget_container ul.reminders li table {
+        width: 100%;
+      }
+        div.dashboard div.widget_container ul.reminders li table th {
+          width: 20%;
+        }
+ 

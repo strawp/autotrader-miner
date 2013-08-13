@@ -1,0 +1,9 @@
+    form div.field div.help {
+      margin-top: 0;
+    }
+      form div.field div.help h3 {
+        font-size: 100%;
+      }
+    div.field {
+      width: 95% !important;
+    }

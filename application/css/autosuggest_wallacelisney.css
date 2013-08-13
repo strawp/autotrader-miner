@@ -1,0 +1,149 @@
+/* 
+================================================
+autosuggest, inquisitor style
+================================================
+*/
+
+body
+{
+	position: relative;
+}
+
+
+div.autosuggest
+{
+	position: absolute;
+  background: white;
+  border: #6CD2A8 1px solid;
+}
+
+div.autosuggest div.as_header,
+div.autosuggest div.as_footer
+{
+	position: relative;
+	background-position: top right;
+	background-repeat: no-repeat;
+	overflow: hidden;
+}
+div.autosuggest div.as_footer
+{
+}
+
+div.autosuggest div.as_header div.as_corner,
+div.autosuggest div.as_footer div.as_corner
+{
+	position: absolute;
+	top: 0;
+	left: 0;
+	background-position: top left;
+	background-repeat: no-repeat;
+}
+div.autosuggest div.as_footer div.as_corner
+{
+}
+div.autosuggest div.as_header div.as_bar,
+div.autosuggest div.as_footer div.as_bar
+{
+	overflow: hidden;
+}
+
+
+div.autosuggest ul
+{
+	list-style: none;
+	padding: 0;
+	overflow: hidden;
+  margin: 0;
+}
+
+div.autosuggest ul li
+{
+	padding: 0;
+	text-align: left;
+}
+
+div.autosuggest ul li a
+{
+	display: block;
+	text-decoration: none;
+	background-color: transparent;
+	position: relative;
+	padding: 0;
+	width: 100%;
+}
+div.autosuggest ul li a:hover
+{
+  background: #EDFAF4;
+}
+div.autosuggest ul li.as_highlight a:hover
+{
+  background: #EDFAF4;
+}
+
+div.autosuggest ul li a span
+{
+	display: block;
+	padding: 3px 6px;
+	font-weight: bold;
+}
+
+div.autosuggest ul li a span small
+{
+	font-weight: normal;
+}
+
+div.autosuggest ul li.as_highlight a span small
+{
+}
+
+div.autosuggest ul li.as_highlight a
+{
+	background-position: bottom right;
+	background-repeat: no-repeat;
+}
+
+div.autosuggest ul li.as_highlight a span
+{
+	background-position: bottom left;
+	background-repeat: no-repeat;
+}
+
+div.autosuggest ul li a .tl,
+div.autosuggest ul li a .tr
+{
+	background-image: transparent;
+	background-repeat: no-repeat;
+	position: absolute;
+	top: 0;
+	padding: 0;
+	margin: 0;
+}
+div.autosuggest ul li a .tr
+{
+	right: 0;
+}
+
+div.autosuggest ul li.as_highlight a .tl
+{
+	left: 0;
+	background-position: bottom left;
+}
+
+div.autosuggest ul li.as_highlight a .tr
+{
+	right: 0;
+	background-position: bottom right;
+}
+
+
+
+div.autosuggest ul li.as_warning
+{
+	font-weight: bold;
+	text-align: center;
+}
+
+div.autosuggest ul em
+{
+	font-style: normal;
+}

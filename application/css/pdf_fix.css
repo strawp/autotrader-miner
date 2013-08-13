@@ -1,0 +1,204 @@
+/* CSS to fix bad rendering of pages as PDF */
+
+html * {
+  margin: 0;
+  padding: 0;
+}
+body {
+  font-family: Helvetica, Arial, sans serif;
+  padding: 0;
+  margin: 0;
+  font-size: 70%;
+}
+label {
+  display: block;
+}
+blockquote {
+  padding: 0.5em 1em;
+}
+ul, ol {
+}
+h1,h2,h3,h4,h5,h6 {
+  font-weight: normal;
+}
+h2 {
+  font-style: italic;
+}
+h4, h6 {
+  color: black;
+}
+a {
+  color: black;
+  text-decoration: none;
+}
+
+div.report {
+  page-break-inside: never;
+}
+
+ul.tab { display: none; }
+  ul.tab li {
+    display: none;
+  }
+  ul.tab li.current {
+    display: inline;
+  }
+p {
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+table.toc {
+  page-break-after: always;
+}
+div.front {
+  page-break-after: always;
+}
+p.print_footer {
+  display: block;
+  page-break-after: always;
+}
+  p.print_footer span {
+    display: block;
+  }
+  p.print_footer span.pagenum {
+    font-weight: bold;
+    text-align: center;
+  }
+p.description {
+  display: none;
+}
+table {
+  border-collapse: collapse;
+}
+  table tr {}
+    table tr th {
+      text-align: left;
+      font-weight: bold;
+      padding-right: 1em;
+    }
+
+  div.front { 
+    text-align: center;
+    padding-top: 20%; 
+    font-size: 200%;
+  }
+    div.front h2 {
+      page-break-before: never;
+    }
+    div.front h1 { }
+
+table.list {
+  border-top: #ccc 1px solid;
+  border-left: #ccc 1px solid;
+  border-right: black 1px solid;
+  border-bottom: black 1px solid;
+  margin-bottom: 2em;
+}
+  table.list tr {
+    padding: 0;
+    margin: 0;
+    border: 0;
+  }
+    table.top_ten tr td {
+      border-bottom: #ccc solid 1px;
+    }
+    table.list tr th {
+      vertical-align: top;
+      padding: 0;
+      padding: 0 0.5em 0.25em 0.5em;
+      background-color: #dae9ed;
+    }
+    table.list tr th.collapsed,
+    table.list tr td.collapsed {
+      width: 0;
+      padding: 0;
+      overflow: hidden;
+    }
+      table.list tr th a {
+        display: block;
+        border: none;
+      }
+      table.list tr th.desc a,
+      table.list tr th.asc a {
+        padding-left: 20px;
+      }
+    table.list tr td {
+      vertical-align: top;
+      padding: 0 0.5em;
+    }
+    table.list tr td.dte,
+    table.list tr td.csh {
+      text-align: right;
+    }
+    div.report table.list tr.totals td.highlight {
+      border-color: red;
+      border-width: 1px 3px 3px 3px;
+      border-top-color: black;
+    }
+    table.report tr.received td.highlight {
+      border-bottom: 1px solid black;
+    }      
+    table.report tr.header th.year a,
+    table.report tr.header th.total a {
+      display: none;
+    }
+    table.report tr.totals td,
+    table.report tr.totals th { 
+      border-bottom: 3px double black;
+    }
+      table.report tr td br {
+        display: block;
+      }        
+      table.report tr td span.sum {
+        display: inline;
+        border: none;
+      }
+
+div.graph_holder {
+  clear: none;  
+  width: 90%;
+}
+  div.graph_holder img {
+    display: block;
+    clear: none;
+  }
+
+div.report #frmGrandChallenge p,
+div.report #frmGrandChallenge div.field {
+  display: none;
+}
+
+div.widget_container {
+  float: none;
+  width: 100%;
+}
+  div.widget_container ul {
+    padding-left: 1em;
+  }
+div.report h2 {
+  background-color: #88C8DD;
+  color: black;
+}  
+h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+  color: white;
+  background: #248CB0;
+  padding: 0.25em 1%;
+  border: 1px solid white;
+  clear: both;
+  font-weight: normal;
+  border-image: initial;
+}
+  h3 a {
+    color: white;
+  }
+div.report span.current_period {
+  background: inherit;
+  color: inherit;
+  border: none;
+  padding: 0;
+  font-weight: inherit;
+  font-size: inherit;
+  text-transform: inherit;
+  margin: 0;
+}

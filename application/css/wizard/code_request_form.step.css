@@ -1,0 +1,116 @@
+#tblCode {
+  font-size: 10pt;
+}
+.row1,
+.row3,
+.row4,
+.row5 {
+  font-weight: bold;
+  font-size: 12pt;
+}
+.row3 .celld,
+.row4 .celld,
+.row5 .celld {
+  text-align: right;
+}
+.row3 .cellf,
+.row4 .cellf,
+.row5 .cellf {
+  border: 3px solid red;
+}
+.row4 .cellf {
+  border-width: 0 3px;
+}
+.row2 {
+  padding-top: 1em;
+}
+.row7 .cellc {
+  font-weight: bold;
+  font-size: 12pt;
+  white-space: nowrap;
+}
+.row7 .cellf,
+.row8 .cellf {
+  border: 3px solid red;
+  text-align: center;
+}
+.row7 .cellf {
+  border-bottom: 1px solid black;
+}
+.row8 .cellf {
+  border-top: none;
+}
+.row10 {
+  white-space: nowrap;
+}
+.row17 {
+  font-size: 10pt;
+  font-weight: bold;
+  text-align: center;
+  white-space: nowrap;
+}
+.row17 td {
+  padding-right: 1em;
+}
+tr.code td {
+  border: 1px solid black;
+  border-width: 1px 1px 0 0;
+  padding: 0.1em 0.2em;
+}
+tr.code .cella {
+  border-left: 1px solid black;
+}
+.row42.code td {
+  border-bottom: 1px solid black;
+}
+.cellm,
+.celln,
+.cello,
+.cellt,
+.cellu,
+.cellv,
+.cellw {
+  display: none;
+}
+tr.code .cellp,
+tr.code .cellq,
+tr.code .cellr,
+tr.code .cells,
+tr.code .cellx {
+  border: none;
+}
+td.border {
+  background: black;
+}
+.row46 .cellh {
+  font-weight: bold;
+  font-size: 11pt;
+}
+.row48 .cellh,
+.row49 .cellh,
+.row50 .cellh {
+  font-weight: bold;
+  font-size: 11pt;
+}
+.row48 .cellj,
+.row49 .cellj,
+.row50 .cellj {
+  border: 2px solid black;
+  border-width: 0 0 2px 2px;
+}
+.row50 .cellj {
+  border-bottom: none;
+}
+.row56,
+.row57,
+.row62,
+.row63,
+.row64,
+.row65,
+.row70,
+.row71,
+.row72,
+.row73,
+.row74 {
+  font-weight: bold;
+}

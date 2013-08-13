@@ -1,0 +1,24 @@
+td.htm a.busy,
+div.htm a.busy {
+  padding-left: 20px;
+  min-height: 20px;
+  border: none;
+  background: url( ../../img/ajax-loader-sm.gif ) left center no-repeat;
+}
+#dialog div.body {
+  padding: 0.5em 1em;
+}
+dl dt, dl dd {
+  float: left;
+}
+dl dd {
+  font-style: italic;
+}
+dl dt {
+  clear: left;
+  width: 50%;
+}
+#dialog p {
+  clear: left;
+  padding-top: 1em;
+}

@@ -1,0 +1,21 @@
+#content.new {
+  padding: 0;
+  margin: 0;
+}
+div#content.new h2 { display: none; }
+div#content.new div.field.file { 
+  width: 60%; 
+  float: left;
+  padding: 0;
+}
+div#content.new form div.controls {
+  width: 10%;
+  float: left;
+  clear: none;
+}
+div#content.new form div.controls ul.options {
+  margin: 0.5em;
+}
+div#content.new form {
+  padding: 0;
+}

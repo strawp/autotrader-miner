@@ -1,0 +1,11 @@
+
+div.field.risk_category_list {}
+  div.field.risk_category_list.low {
+    background-color: #DAF4D9;
+  }
+  div.field.risk_category_list.medium {
+    background-color: #FFFDBB;
+  }
+  div.field.risk_category_list.high {
+    background-color: #F3D6D6;
+  }

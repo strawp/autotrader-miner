@@ -1,0 +1,121 @@
+/*
+  Handheld rules, spoon-fed one by one because IE on WM *Just Doesn't Get It*.
+*/
+
+  ul {
+    margin-left: 0px !important;
+  }
+
+  #header ul.cu_links {
+    padding: 0;
+    width: 100%;
+    background: none;
+    display: none;
+  }
+
+  #header ul.cu_links li {
+    display: block;
+    width: 10em;
+    float: left;
+  }
+
+  #header ul.cu_links li a {
+    padding: 0;
+    color: black;
+  }
+
+  #header h1 {
+    text-align: left;
+    background-image: none;
+    height: auto;
+  }
+
+  div.navigation {
+    margin-left: 0;
+    background: inherit;
+    float: none;
+    clear: left;
+    width: auto !important;
+    padding: 0;
+  }
+
+  div.navigation * {
+    width: auto;
+    padding: none;
+    margin: none;
+    background-image: none;
+  }
+  div.navigation li {
+    width: auto !important;
+    float: none;
+    background: inherit;
+    background-image: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  div.navigation li.children ul {
+    padding: 0;
+    top: 0;
+    margin-left: 0 !important;
+    border: none;
+  }
+
+  div.navigation li a {
+    width: 100%;
+  }
+
+  div.navigation li span {
+    margin: 0;
+    padding: 0;
+  }
+
+  #content {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    background-image: none;
+    float: none;
+  }
+
+  form fieldset {
+    width: 100%;
+  }
+
+  form div.field {
+    width: 100% !important;
+    position: relative;
+    padding: 0;
+    margin: 1em 0 0 0;
+  }
+
+  form div.field label {
+    margin: 0;
+    width: auto;
+    float: none;
+    padding: 0;
+    text-align: left;
+  }
+
+  form div.field div.help {
+    width: 100%;
+  }
+
+  form div.field input, 
+  form div.field select, 
+  form div.field textarea {
+    width: 100% !important;
+  }
+
+  ul.list li h4 {
+    float: none;
+  }
+
+  ul.list li p {
+    width: 100%;
+    float: none;
+  }
+
+  #jumplinks {
+    position: relative;
+  }

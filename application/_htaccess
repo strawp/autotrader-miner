@@ -1,0 +1,15 @@
+RewriteEngine on
+
+# Forbid SVN meta data files
+RewriteRule ^_ht - [F]
+RewriteRule ^(.*/)?\.(svn|git)/ - [F,L]
+ErrorDocument 403 "Access Forbidden" 
+
+# Reroute everything not found through route script
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.+)$ view/route.php
+
+# Forbid TRACE and TRACK methods
+RewriteCond %{REQUEST_METHOD} ^(TRACE|TRACK)
+RewriteRule .* - [F]

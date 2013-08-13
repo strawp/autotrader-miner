@@ -1,0 +1,17 @@
+/* Overide some jQueryUI tabs styles */
+.ui-tabs {
+  background: transparent;
+  border: none;
+  padding: none;
+}
+.ui-tabs-nav {
+  border: none;
+  background: inherit;
+  border-bottom: 1px solid gray;
+  border-radius: 0;
+}
+.ui-widget { font-family: inherit; font-size: inherit; }
+.ui-widget input, .ui-widget select, .ui-widget textarea, .ui-widget button { font-family: inherit; font-size: inherit; font-weight: inherit; }
+.ui-widget input.button, .ui-widget button { font-family: inherit; font-size: 80%; font-weight: bold; }
+.ui-widget-content a { color: #0183AE; }
+.ui-resizable-handle { z-index: 999; }

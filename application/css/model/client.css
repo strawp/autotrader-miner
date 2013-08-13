@@ -1,0 +1,13 @@
+/* CSS for the client model */
+
+#frmClient {}
+  #frmClient fieldset.pre_hdti,
+  #frmClient fieldset.post_hdti {
+    width: 49%;
+    float: left;
+    clear: none;
+  }
+  #frmClient fieldset.post_hdti {
+    margin-left: 1%;
+  }
+  

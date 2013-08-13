@@ -1,0 +1,116 @@
+div.journal form {
+  background: #F2F5F7;
+  border: 1px solid #DDD;
+  border-radius: 5px;
+}
+div.journal td {
+  padding: 0.1em 0.2em;
+  font-size: 10pt;
+  white-space: nowrap;
+}
+div.journal td { 
+  font-family: Arial, sans-serif;
+  font-weight: bold; 
+}
+tr.row1 td.cella { 
+  font-size: 16pt;
+}
+tr.row1 td.cella span { color: red; }
+tr.row2 td.cella {
+  text-decoration: underline;
+  font-size: 12pt;
+}
+tr.row4 td.cellc,
+tr.row5 td.cellc,
+tr.row4 td.celle,
+tr.row5 td.celle {
+  font-size: 12pt;
+  text-align: right;
+}
+tr.row4 td.celld,
+tr.row5 td.celld {
+  font-size: 12pt;
+  border: 3px solid red;
+}
+tr.row4 td.celld {
+  border-bottom: none;
+}
+tr.row4 td.cellg,
+tr.row5 td.cellg {
+  font-weight: normal;
+  text-align: center;
+  border: 3px solid red;
+  font-size: 12pt;
+}
+tr.row4 td.cellg {
+  border-bottom: none;
+}
+.row4 .cellh {
+  width: 4em;
+}
+.row6 .celld {
+  text-align: right;
+}
+.row6 .celld,
+.row6 .cellg {
+  font-size: 12pt;
+}
+.row9 .cellc {
+  font-size: 10pt;
+  text-align: right;
+}
+.row9 .celld {
+  border: 3px solid red;
+  border-bottom: 1px dashed black;
+  font-size: 10pt;
+}
+.row9 .cellh,
+.row10 .cellh, 
+.row11 .cellh {
+  text-align: right;
+  font-size: 12pt;
+}
+.row9 .cellk,
+.row10 .cellk,
+.row11 .cellk {
+  font-size: 12pt;
+  border: 2px solid black;
+}
+.row10 .cellk {
+  color: red;
+  border-width: 0 2px;
+}
+.row10 .celld {
+  border: 3px solid red;
+  border-top: none;
+  border-bottom: 1px dashed black;
+}
+.row11 .celld {
+  border: 3px solid red;
+  border-top: none;
+}
+.row13 .cellc {
+  font-size: 10.5pt;
+}
+  .row13 .cellc span {
+    color: red;
+  }
+.row15 {
+  font-size: 10pt;
+}
+td.border {
+  background: red;
+  height: 0.1em;
+}
+tr.codes .cella,
+tr.codes .cellc,
+tr.codes .celld,
+tr.codes .celle {
+  font-weight: normal;
+}
+tr.codes .celle {
+  text-align: right;
+}
+tr.negative td.celle {
+  color: red;
+}

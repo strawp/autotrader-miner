@@ -1,0 +1,19 @@
+# Example crontab to go into /etc/cron.d/intranet
+# m     h       dom     mon     dow     user    command
+
+# Monthly
+20      1       1       *       *       root    /usr/bin/php /var/www/intranet/scripts/cron_monthly.php
+
+# Weekly
+0       20      *       *       5       root    /usr/bin/php /var/www/intranet/scripts/cron_weekly.php
+
+# Daily
+0       1       *       *       *       root    /usr/bin/php /var/www/intranet/scripts/cron_daily.php
+
+# Hourly
+0       *       *       *       *       root    /usr/bin/php /var/www/intranet/scripts/cron_hourly.php
+
+
+# For export daemon
+# Checks export queue daemon is running once per minute
+*       *       *       *       *       root    /usr/bin/php /var/www/slave/scripts/export_queue_daemon.php >> /home/nti010/daemon.log

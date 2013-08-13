@@ -1,0 +1,13 @@
+/*
+ Edit this with your own organisation logo and header background 
+*/
+
+body #container {
+  background: white url( ../img/brand_bg.gif ) top right no-repeat;
+}
+  #header {
+    background: transparent url( ../img/brand_logo.gif ) 10px 0px no-repeat;
+  }
+    #header h1 {
+      background: transparent;
+    }
