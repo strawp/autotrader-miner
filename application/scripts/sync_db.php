@@ -71,6 +71,8 @@
   $model = new Model( "FieldUser" );
   $model->addField( Field::create( "intFieldId" ) );
   $model->addField( Field::create( "intUserId" ) );
+  $model->addField( Field::create( "cnfSearch" ) );
+  $model->addField( Field::create( "cnfResults" ) );
   $aCore[] = $model;
   
   $aToAlter = array();

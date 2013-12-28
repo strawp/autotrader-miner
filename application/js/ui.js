@@ -294,6 +294,7 @@ function toggleAdvancedSearch(){
 function initSearchPage(){
   if( $( "#content form.search" ).length == 0 ) return;
   if( $( "#content form.edit" ).length > 0 ) return;
+  if( $( "#content form.new" ).length > 0 ) return;
   // buildExpandedList.prototype.customMethod = ;
   
   toggleAdvancedSearch();

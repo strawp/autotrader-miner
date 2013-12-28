@@ -7,8 +7,8 @@
     
     function Search(){
       $this->Model( "Search" );
-      $this->addField( Field::create( "strName" ) );
       $this->addField( Field::create( "strUrl", "required=1" ) );
+      $this->addField( Field::create( "strName", "required=0" ) );
       $this->addField( Field::create( "dtmLastRan" ) );
     }
     function run(){

@@ -17,7 +17,7 @@
       // $txt = file_get_contents( $url );
 
       // Name
-      if( preg_match( "/<h1 id=\"fullPageMainTitle\"[^>]*>([^<]+)<\/h1>/", $txt, $m ) ) $this->Fields->Name->set( $m[1] );
+      if( preg_match( "/<span id=\"fullPageMainTitle\"[^>]*>([^<]+)<\/span>/", $txt, $m ) ) $this->Fields->Name->set( $m[1] );
       
       // Meta data
       if( preg_match( "/<meta name=\"bannerMetaData\" content=\"make=([^,]+),model=([^,]+),mileage=([0-9]+),year-of-manufacture=([0-9]{4})\"\/>/", $txt, $m ) ){
@@ -36,7 +36,8 @@
         $aColours[] = $row["name"];
       }
       $match = "/(".join( "|", $aColours ).")/i";
-      if( preg_match( "/<span id=\"leadDescription\" class=\"descriptionLeadSentence\"><strong>([^<]+)/", $txt, $m ) ){
+      // if( preg_match( "/<span id=\"leadDescription\" class=\"descriptionLeadSentence\"><strong>([^<]+)/", $txt, $m ) ){
+      if( preg_match( "/<p class=\"sellerspecs-para\">([^<]+)/", $txt, $m ) ){
         if( preg_match( $match, $m[1], $m2 ) ){
           $this->Fields->ColourId->set( $m2[1] );
         }else $this->Fields->ColourId = "Unlisted";
@@ -46,56 +47,65 @@
       if( preg_match( "/([0-9]+) cc/", $txt, $m ) ) $this->Fields->EngineSize->set( $m[1] );
 
       // Price
-      if( preg_match( "/<div id=\"price\" class=\"offerPrice\">([^<]+)<\/div>/", $txt, $m ) ) $this->Fields->Price->set( $m[1] );
-
+      if( preg_match( "/<span id=\"price\" >([^<]+)<\/span>/", $txt, $m ) ) $this->Fields->Price->set( $m[1] );
+      
+      if( preg_match( "/<meta name=\"description\" content='([^']+)' class=\"facebookDescription\" \/>/", $txt, $m ) ){
+        $fbdesc = $m[1];
+      }
       // Fuel
-      if( preg_match( "/<span class=\"fuel\">([^<]+)<\/span>/", $txt, $m ) ) $this->Fields->FuelType->set( strtolower( $m[1] ) );
+      if( preg_match( "/(Petrol|Diesel)/i", $fbdesc, $m ) ) $this->Fields->FuelType->set( strtolower( $m[1] ) );
+      
+      // Transmission
+      if( preg_match( "/(Manual|Automatic)/i", $fbdesc, $m ) ) $this->Fields->Transmission->set( strtolower( $m[1] ) );
 
-      // Parse the stats tables
+
+      // Get the page as a DOM
       require_once( "lib/simplehtmldom/simple_html_dom.php" );
       $dom = str_get_html( $txt );
+      
+      // Parse the stats tables
       if( !$dom ) return false;
       $aStats = array();
       $aFeatures = array();
-      foreach( $dom->find( "div.tabContent" ) as $div ){
-        $divname = trim( $div->find( "h2",0 )->innertext() );
+      foreach( $dom->find( "div.fpa-main" ) as $div ){
         foreach( $div->find( "table" ) as $tbl ){
           if( !$tbl ) continue;
           foreach( $tbl->find( "tr" ) as $row ){
-            $th = $row->find("th",0);
-            $td = $row->find("td",0);
-            if( !$td ) continue;
-            if( !$th ){ 
-              $aFeatures[] = trim(strip_tags($td->innertext()));
-              continue;
+            for( $i=0; $i<sizeof($tbl->find('tr')); $i++ ){
+              $th = $row->find("th",$i);
+              $td = $row->find("td",$i);
+              if( !$td ) continue;
+              if( !$th ) continue; 
+              $key = trim(strip_tags($th->innertext()));
+              $val = trim(strip_tags($td->innertext()));
+              if( $val == "Standard" ) $aFeatures[] = $key;
+              else $aStats[$key] = $val;
             }
-            $key = trim(strip_tags($th->innertext()));
-            $val = trim(strip_tags($td->innertext()));
-            $aStats[$key] = $val;
           }
         }
       }
       
-        // Description
-        if( $dom->find("p.vehicleFullDescription",0)){
-          $this->Fields->Description = trim(strip_tags($dom->find("p.vehicleFullDescription",0)->innertext()));
-        }else{
-          echo "ERROR: Didn't find p.vehicleFullDescription in:\n\n $txt\n\n";
-        }
+      // Description
+      $find = "p.sellerspecs-para";
+      if( $dom->find($find,0)){
+        $this->Fields->Description = trim(strip_tags($dom->find($find,0)->innertext()));
+      }else{
+        echo "ERROR: Didn't find $find in:\n\n $txt\n\n";
+      }
+      
       $aMap = array(
-       "doors" => "Number of doors",
-       "seats" => "Number of seats",
-       "transmission" => "Gearbox type",
-       "co2" => "CO2 emissions",
-       "insurance_group" => "Insurance group",
+       "doors" => "No. of doors",
+       "seats" => "No. of seats",
+       "co2" => "CO2 rating (g/km)",
+       // "insurance_group" => "Insurance group",
        "tax_band_id" => "Vehicle tax band",
-       "urban_fuel_consumption" => "Fuel consumption (urban)",
-       "extraurban_fuel_consumption" => "Fuel consumption (extra urban)",
-       "combined_fuel_consumption" => "Fuel consumption (combined)",
-       "zero_to_sixty_two" => "0 - 62 mph",
+       "urban_fuel_consumption" => "Urban mpg",
+       "extraurban_fuel_consumption" => "Extra Urban mpg",
+       "combined_fuel_consumption" => "Average mpg",
+       "zero_to_sixty_two" => "Acceleration (0-62mph)",
        "top_speed" => "Top speed",
        "power" => "Engine power",
-       "torque" => "Engine torque",
+       // "torque" => "Engine torque",
       );
       foreach( $aMap as $col => $key ){
         if( !isset( $this->aFields[$col] ) ){
@@ -118,7 +128,7 @@
       curl_setopt( $ch, CURLOPT_NOBODY, true );
       $txt = curl_exec( $ch );
       $inf = curl_getinfo($ch);
-      if( $inf["http_code"] == "404" ){
+      if( $inf["http_code"] != "200" ){
         $this->Fields->Active = false;
         return false;
       }
@@ -131,12 +141,15 @@
       $db->query( "SELECT * FROM car WHERE active = 1 AND last_checked < $since" );
       echo $db->numrows." cars to check if still active\n"; 
       $inactivecount = 0;
+      $i = 1;
       while( $row = $db->fetchRow() ){
-        $car = new Car();
+        echo $i."\r";
+        $car = new AutotraderConnector();
         $car->initFromRow( $row );
         if( !$car->determineActive() ) $inactivecount++;
         $car->Fields->LastChecked->value = time();
         $car->save();
+        $i++;
       }
       echo "Set $inactivecount inactive\n";
     }

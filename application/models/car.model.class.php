@@ -11,12 +11,13 @@
       $this->addField( Field::create( "strName", "required=0;autojoin=1" ) );
       $this->addField( Field::create( "cnfShortlist" ) );
       $this->addField( Field::create( "htmUrl" ) );
-      $this->Fields->Url->aUsesFields = array( "name" );
+      $this->Fields->Url->aUsesFields = array( "name", "autotrader_number" );
       $this->addField( Field::create( "txtDescription" ) );
       $this->addField( Field::create( "txtFeatures" ) );
       $this->addField( Field::create( "lstUserId", "default=".SessionUser::getId() ) );
       $this->addField( Field::create( "intMileage" ) );
       $this->addField( Field::create( "intYear" ) );
+      $this->addField( Field::create( "dcmApproxEngineSize", "displayname=Approx Engine Size (L)" ) );
       $this->addField( Field::create( "intEngineSize", "displayname=Engine Size (CC)" ) );
       $this->addField( Field::create( "strMake", "display=0" ) );
       $this->addField( Field::create( "lstMakeId", "allowcreatefk=1" ) );
@@ -43,6 +44,7 @@
       $this->addField( Field::create( "intTopSpeed" ) );
       $this->addField( Field::create( "intPower" ) );
       $this->addField( Field::create( "intTorque" ) );
+      $this->addField( Field::create( "lstNoiseId" ) );
       $this->addField( Field::create( "cshInsuranceQuote", "helphtml=If you get an insurance quote for this car you can enter it here and it will be taken into account when calculating annual cost of ownership" ) );
       $this->addField( Field::create( "cshFuelAndTaxCost", "helphtml=This assumes tax based on TC48 and TC49 type cars, registered after 2001 and more than a year old plus cost of running annual mileage for the car's fuel type" ) );
       $this->addField( Field::create( "cshAnnualCost", "helphtml=This is fuel and tax cost plus insurance quote (if there is one)" ) );
@@ -56,11 +58,12 @@
       $this->createongoto = true;
       $this->calculations[] = "setHtmFields";
       $this->aResultsFields = array( "name", "shortlist", "url", "make_id", "car_model_id", "colour_id", "price", "combined_fuel_consumption", "zero_to_sixty_two", "tco_three_years" );
+      $this->aSearchFields = $this->aResultsFields;
     }
 
     function setHtmFields(){
-      // echo $this->Fields->AutotraderNumber->toString();
-      $this->aFields["url"]->value = "<a href=\"".AUTOTRADER_BASE.$this->aFields["autotrader_number"]->toString()."\">".strip_tags($this->Fields->Name->toString())."</a>";
+      // $this->aFields["url"]->value = "<a href=\"".AUTOTRADER_BASE.$this->aFields["autotrader_number"]->toString()."\">".strip_tags($this->Fields->Name->toString())."</a>";
+      $this->aFields["url"]->value = "<a href=\"".AUTOTRADER_BASE.$this->aFields["autotrader_number"]->toString()."\">View on Autotrader</a>";
     }
 
     function carFinally(){
@@ -71,6 +74,8 @@
       $this->setHasCupholders();
       $this->setFeatures();
       $this->setLists();
+      $this->setApproxEngineSize();
+      $this->setNoiseId();
     }
 
     function fetchDetails(){
@@ -79,9 +84,23 @@
       $at->fetchDetails();
       $this->aFields = $at->aFields;
     }
+
+    function setNoiseId(){
+      // Join to noise table using make, model, year and engine size
+      $id = Noise::findClosestMatchId( $this->aFields["make"]->toString(), $this->aFields["car_model"]->toString(), $this->aFields["year"]->toString(), $this->aFields["approx_engine_size"]->toString() );
+      if( $id ) $this->aFields["noise_id"]->set( intval( $id ) );
+    }
+
+    function setApproxEngineSize(){
+      $size = $this->aFields["engine_size"]->value;
+      $size = round( $size/100 )/10;
+      $this->aFields["approx_engine_size"]->set( $size );
+    }
+
     function setFeatures(){
       // Pick things in list of features
       $feat = $this->Fields->Features->toString();
+      $feat .= "\n".$this->Fields->Description->toString();
       $feat = str_replace( "&nbsp;", "", $feat );
       if(preg_match("/air[\s-]?conditioning/i",$feat)) $this->Fields->HasAircon = true;
       if(preg_match("/cup[\s-]?holder[s]?/i",$feat)) $this->Fields->HasCupholders = true;

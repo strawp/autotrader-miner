@@ -53,6 +53,7 @@
       $this->allowsearchsummary   = true;   // Allow the statistical search summary for this model
       $this->allowemailcreate     = false;  // Let this object be created by an email sent to the server
       $this->allowattachments     = false;  // Whether this model can have attachments
+      $this->allowduplicatelink   = false;  // If true, adds a link to a "new" form, propagated with form info from the current object
       $this->aAttachmentIds = array();      // Array of IDs of attachments being submitted to be saved
       $this->bodytextfield = "name";        // If this object can be inserted by email, put the body text in this field
       $this->authorfield = "user_id";       // If this object can be inserted by email, set the sender's ID to this field
@@ -517,7 +518,7 @@
       }else{
 	      $db = new $this->dbclass;
 	      $dbr = $db->getByClause( $this->tablename, $clause );
-        if( empty( $dbr ) || !$dbr->rlt ){ 
+	      if( empty( $dbr ) || !$dbr->rlt ){ 
           addLogMessage( "End", $this->name."->retrieveByClause()" );
           $this->id = 0;
           return false;
@@ -1301,6 +1302,7 @@
         $sql .= " LIMIT ".intval( $limit );
       }
       $db->query( $sql );
+      // pre_r( $db->getSummary() );
       SessionDb::setLastSearchSql($sql);
       addLogMessage( "End", $this->name."->getWithJoins()" );
       return $db;
@@ -1679,6 +1681,7 @@
               $a = preg_split( "/_/", $col ); // OK
               $stat = array_pop( $a );
               $field = $this->aFields[join( "_", $a )];
+              if( $value === null ) $value = "null";
               $aReturn[$type][$field->displayname][ucfirst( $stat )] = $value;
             }
           }
@@ -1830,6 +1833,17 @@
       return $html;
     }
     
+    
+    /**
+    * Get duplication URL 
+    */
+    function getDuplicateLink(){
+      $url = SITE_BASE.$this->tablename."/new";
+      foreach( $this->aFields as $k => $f ){
+        $url .= "/$k/".urlencode(urlencode($f->value));
+      }
+      return $url;
+    }
     
     /**
     * Gets options for the search results
@@ -2215,10 +2229,13 @@
         foreach( $this->aFields as $key => $field ){
           if( !empty( $field->textfield ) ){
             if( !array_key_exists( $field->textfield, $row ) ) continue;
+            if( !array_key_exists( $field->textfield, $this->aFields ) ) continue;
+            $this->aFields[$field->textfield]->value = $row[$field->textfield];
           }elseif( !array_key_exists( $key, $row ) ){ 
             continue;
+          }else{
+            $this->aFields[$key]->value = $row[$key];
           }
-          $this->aFields[$key]->value = $row[$key];
           if( $this->aFields[$key]->type == "mem" ) $this->aFields[$key]->pretendtype = "";
         }
         $this->id = intval( $row["id"] );
@@ -2272,7 +2289,11 @@
             $str .= $row[$key];
           */
           }else{
-            $tmp = trim( $field->toString( $aData ) );
+            if( !empty( $field->textfield ) && !empty( $this->aFields[$field->textfield] ) ){
+              $tmp = $this->aFields[$field->textfield]->toString();
+            }else{
+              $tmp = trim( $field->toString( $aData ) );
+            }
             $tmp = preg_replace( "/[\n\r\t]/", "", $tmp );
             $tmp = eregi_replace( '"', "'", $tmp );
             $tr->addCell( new TableCell( $tmp, $key ) );
@@ -2389,11 +2410,11 @@
     /**
     * Set up the search values from the search URL page
     */
-    function setFieldsFromSearchArgs(){
+    function setFieldsFromSearchArgs($search=true){
       foreach( $this->aFields as $key => $field ){
         if( $field->setIsSearchedOn() && $field->enabled ){ 
           $v = isset( $_GET[$field->columnname] ) && $_GET[$field->columnname] != "" ? $_GET[$field->columnname] : "";
-          $this->aFields[$key]->set( urldecode( urldecode( $v ) ), true );
+          $this->aFields[$key]->set( urldecode( urldecode( $v ) ), $search );
         }
       }
     }
@@ -2642,6 +2663,7 @@
       if( $this->action == "edit" && $this->name != "MemberInterface" && $action != "_repeat" ){ 
         if( strstr( $this->access, "d" ) !== false ) $controls .= "            <li><a href=\"".SITE_ROOT.$this->tablename."/delete/".$this->id."\" class=\"delete\">Delete</a></li>\n";
         if( strstr( $this->access, "c" ) !== false ) $controls .= "            <li><a class=\"new\" href=\"".SITE_ROOT.$this->tablename."/new\">Add another</a></li>\n";
+        if( strstr( $this->access, "c" ) !== false && $this->allowduplicatelink ) $controls .= "            <li><a class=\"duplicate\" href=\"".$this->getDuplicateLink()."\">Duplicate this</a></li>\n";
         $backitem = Breadcrumb::getBackLinkItemFromCurrentPage();
         if( $backitem ){
           $controls .= "            <li><a class=\"back\" href=\"".$backitem["url"]."\">Back to ".$backitem["name"]."</a></li>\n";
