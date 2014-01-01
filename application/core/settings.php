@@ -39,7 +39,7 @@
       define( "PROXY_HOST", "" );
       define( "PROXY_PORT", "" );
       define( "SITE_BACKUPDIR", "c:\\backups\\" );
-      define( "SITE_ENABLEEXPORTQUEUE", true );
+      define( "SITE_ENABLEEXPORTQUEUE", false );
       
       define( "SITE_AUTH", "db" );
       

@@ -30,6 +30,11 @@
       $this->addField( Field::create( "strTransmission" ) );
       $this->addField( Field::create( "strFuelType" ) );
       $this->addField( Field::create( "intCo2" ) );
+      $this->addField( Field::create( "cnfHasSpareWheel" ) );
+      $this->addField( Field::create( "cnfHasRainSensor" ) );
+      $this->addField( Field::create( "cnfHasMultifunctionSteeringWheel" ) );
+      $this->addField( Field::create( "cnfHasPaddleshift" ) );
+      $this->addField( Field::create( "cnfHasIsofix" ) );
       $this->addField( Field::create( "cnfHasAircon" ) );
       $this->addField( Field::create( "cnfHasCupholders" ) );
       $this->addField( Field::create( "cnfHasAuxInput" ) );
@@ -70,8 +75,6 @@
       if( $this->id == 0 ) $this->fetchDetails();
       $this->setAnnualCostOfOwnership();
       $this->setTcoThreeYears();
-      $this->setHasAircon();
-      $this->setHasCupholders();
       $this->setFeatures();
       $this->setLists();
       $this->setApproxEngineSize();
@@ -102,11 +105,16 @@
       $feat = $this->Fields->Features->toString();
       $feat .= "\n".$this->Fields->Description->toString();
       $feat = str_replace( "&nbsp;", "", $feat );
-      if(preg_match("/air[\s-]?conditioning/i",$feat)) $this->Fields->HasAircon = true;
-      if(preg_match("/cup[\s-]?holder[s]?/i",$feat)) $this->Fields->HasCupholders = true;
+      $this->setHasIsofix();
+      $this->setHasAircon();
+      $this->setHasCupholders();
       if(preg_match("/\baux(iliary)?\b/i",$feat)) $this->Fields->HasAuxInput = true;
       if(preg_match("/\bbluetooth\b/i",$feat)) $this->Fields->HasBluetooth = true;
       if(preg_match("/\busb\b/i",$feat)) $this->Fields->HasUsb = true;
+      if(preg_match("/\b(tiptronic|paddle[ -]*shift)\b/i",$feat)) $this->Fields->HasPaddleshift = true;
+      if(preg_match("/\bmulti[ -]?function.* steering[- ]?wheel\b/i",$feat,$m)) $this->Fields->HasMultifunctionSteeringWheel = true;
+      if(preg_match("/\bspare wheel\b/i",$feat)) $this->Fields->HasSpareWheel = true;
+      if(preg_match("/\brain sensor\b/i",$feat)) $this->Fields->HasRainSensor = true;
       return true;
     }
 
@@ -139,9 +147,21 @@
     * Attempt to determine from description if the car has air conditioning
     */
     function setHasAircon(){
-      $desc = $this->Fields->Description->toString();
+      $desc = $this->Fields->Features->toString();
+      $desc .= "\n".$this->Fields->Description->toString();
       if( preg_match( "/\b(climate control|a\/?c|air([\s-])?con(ditioning)?)\b/i", $desc, $m ) ){ 
         $this->Fields->HasAircon = true;
+      }
+    }
+
+    /**
+    * Attempt to determine if the car has isofix seats
+    */
+    function setHasIsofix(){
+      $desc = $this->Fields->Features->toString();
+      $desc .= "\n".$this->Fields->Description->toString();
+      if( preg_match( "/\bisofix\b/i", $desc, $m ) ){ 
+        $this->Fields->HasIsofix = true;
       }
     }
 

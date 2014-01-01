@@ -27,7 +27,7 @@
         $this->Fields->Mileage->set( $m[3] );
         $this->Fields->Year->set( $m[4] );
       }
-
+      
       // Colour
       $c = new Colour();
       $dbr = $c->getAll();
@@ -58,13 +58,13 @@
       // Transmission
       if( preg_match( "/(Manual|Automatic)/i", $fbdesc, $m ) ) $this->Fields->Transmission->set( strtolower( $m[1] ) );
 
-
       // Get the page as a DOM
       require_once( "lib/simplehtmldom/simple_html_dom.php" );
       $dom = str_get_html( $txt );
+     
+      if( !$dom ) return false;
       
       // Parse the stats tables
-      if( !$dom ) return false;
       $aStats = array();
       $aFeatures = array();
       foreach( $dom->find( "div.fpa-main" ) as $div ){
