@@ -736,7 +736,7 @@
     * @see afterInsert
     * @see afterUpdate
     */
-    function finally(){
+    function doFinally(){
       $finally = $this->tablename."Finally";
       if( method_exists( $this, $finally ) ){
         return $this->$finally();
@@ -782,7 +782,7 @@
     */
     function save(){
       addLogMessage( "Start", $this->name."->save()" );
-      $this->finally();
+      $this->doFinally();
       addLogMessage( "Update or insert?", $this->name."->save()" );
       if( 
         ( $this->keyfield == "id" && $this->id != 0 ) 
@@ -992,7 +992,7 @@
     * @see deleteTidy
     */
     function delete( ){
-      $this->finally();
+      $this->doFinally();
       $db = new $this->dbclass;
       $notice = $this->displayname;
       $notice .= " \"".$this->getName()."\"";

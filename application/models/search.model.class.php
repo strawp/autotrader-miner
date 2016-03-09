@@ -13,6 +13,7 @@
     }
     function run(){
       require_once( "lib/simplehtmldom/simple_html_dom.php" );
+      $this->debug = true;
       $totalpages = 1;
       $currentpage = 1;
       do{ 
@@ -21,10 +22,13 @@
         $url .= "/page/$currentpage";
         echo "Getting page ".$this->getName()." $currentpage of $totalpages\n";
         if( $this->debug ) echo $url."\n";
-        $dom = file_get_html( $url );
-        $tp = $dom->find( "span.totalPages", 0 );
+        list( $html, $inf ) = AutotraderConnector::getUrl( $url ); // file_get_contents( $url );
+        /*print_r( $inf );
+        print_r( $html );*/
+        $dom = str_get_html( $html );
+        $tp = $dom->find( "li.paginationMini__count strong", 1 );
         if( $tp ) $totalpages = intval($tp->innertext());
-        foreach( $dom->find( "a.title" ) as $link ){
+        foreach( $dom->find( "h1.search-result__title a" ) as $link ){
           if( $this->debug ) echo "Found: ".$link->href."\n";
           if( !preg_match( AUTOTRADER_MATCH, $link->href, $m ) ) continue;
           if( $this->debug ) echo "ID: ".$m[1]."\n";
@@ -46,7 +50,9 @@
       $currentpage = 1;
       $url = $this->Fields->Url->toString();
       if( $this->debug ) echo $url."\n";
-      $html = file_get_contents( $url );
+      list( $html, $inf ) = AutotraderConnector::getUrl( $url ); // file_get_contents( $url );
+      print_r( $html );
+      print_r( $inf );
       $dom = str_get_html( $html );
       // $dom = file_get_html( $url );
       $aSel = $dom->find( "option[class=selected],option[selected=selected]" );

@@ -1,31 +1,51 @@
 <?php
   class AutotraderConnector extends Car {
+    
+    static function getUrl($url){
+      $ch = curl_init( $url );
+      curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
+      curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+      curl_setopt($ch, CURLOPT_USERAGENT, "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:43.0) Gecko/20100101 Firefox/43.0" );
+      $txt = curl_exec( $ch );
+      $inf = curl_getinfo($ch);
+      return array( $txt, $inf );
+    }
+    
     function fetchDetails(){
+      require_once( "lib/simplehtmldom/simple_html_dom.php" );
+      $this->debug = true;
       if( $this->Fields->AutotraderNumber->toString() == "" ) return;
       $url = AUTOTRADER_BASE.$this->Fields->AutotraderNumber->toString();
       if( $this->debug ) echo "Getting new car: $url\n";
-      $ch = curl_init( $url );
-      curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
-      $txt = curl_exec( $ch );
-      $inf = curl_getinfo($ch);
+      list( $txt, $inf ) = self::getUrl( $url );
+      $dom = str_get_html( $txt );
       $this->Fields->LastChecked->value = time();
       if( !$inf || $inf["http_code"] == "404" ){
         $this->Fields->Active = false;
         return false;
       }
 
-      // $txt = file_get_contents( $url );
-
+      $page = $txt;
+  
       // Name
-      if( preg_match( "/<span id=\"fullPageMainTitle\"[^>]*>([^<]+)<\/span>/", $txt, $m ) ) $this->Fields->Name->set( $m[1] );
-      
+      $str = (string)$dom->find( "title", 0 )->innerText();
+      if( $this->debug ) echo "Name: ".$str."\n";
+      $this->Fields->Name = $str;
+      // if( preg_match( "/<span id=\"fullPageMainTitle\"[^>]*>([^<]+)<\/span>/", $txt, $m ) ) $this->Fields->Name->set( $m[1] );
+     
+      // Desc
+      $desc = (string)$dom->find( "section.fpaDescription", 0 )->innerText();
+
       // Meta data
-      if( preg_match( "/<meta name=\"bannerMetaData\" content=\"make=([^,]+),model=([^,]+),mileage=([0-9]+),year-of-manufacture=([0-9]{4})\"\/>/", $txt, $m ) ){
-        $this->Fields->Make->set( $m[1] );
-        $this->Fields->CarModel->set( $m[2] );
-        if( $m[3] < 1000 ) $m[3].="000";
-        $this->Fields->Mileage->set( $m[3] );
-        $this->Fields->Year->set( $m[4] );
+      // if( preg_match( "/<meta name=\"bannerMetaData\" content=\"make=([^,]+),model=([^,]+),mileage=([0-9]+),year-of-manufacture=([0-9]{4})\"\/>/", $txt, $m ) ){
+      if( preg_match( "/<var data-oas-name=\"query-string\" data-oas-value=\"([\"]+)\"/", $txt, $m ) ){
+        $data = parse_str( url_decode( $m[1] ) );
+        print_r( $data );
+        $this->Fields->Make->set( $data["CAR_MAKE"] );
+        $this->Fields->CarModel->set( $data["CAR_MODEL"] );
+        $this->Fields->Year->set( $data["CAR_AGE"] );
+        $this->Fields->Body->set( $data["CAR_BODY"] );
+        $this->Fields->FuelType->set( $data["CAR_FUEL"] );
       }
       
       // Colour
@@ -37,56 +57,42 @@
       }
       $match = "/(".join( "|", $aColours ).")/i";
       // if( preg_match( "/<span id=\"leadDescription\" class=\"descriptionLeadSentence\"><strong>([^<]+)/", $txt, $m ) ){
-      if( preg_match( "/<p class=\"sellerspecs-para\">([^<]+)/", $txt, $m ) ){
-        if( preg_match( $match, $m[1], $m2 ) ){
-          $this->Fields->ColourId->set( $m2[1] );
-        }else $this->Fields->ColourId = "Unlisted";
-      }
-      
+      if( preg_match( $match, $desc, $m2 ) ){
+        $this->Fields->ColourId->set( $m2[1] );
+      }else $this->Fields->ColourId = "Unlisted";
+    
       // Engine size
-      if( preg_match( "/([0-9]+) cc/", $txt, $m ) ) $this->Fields->EngineSize->set( $m[1] );
+      if( preg_match( "/([0-9]\.[0-9]) litres/", $page, $m ) ){ 
+        $cc = intval( $m[1] * 1000 );
+        $this->Fields->EngineSize->set( $cc );
+      }
 
       // Price
-      if( preg_match( "/<span id=\"price\" >([^<]+)<\/span>/", $txt, $m ) ) $this->Fields->Price->set( $m[1] );
+      $this->Fields->Price->set( (string)$dom->find( "span.priceTitle__price", 0 )->innerText() );
       
       if( preg_match( "/<meta name=\"description\" content='([^']+)' class=\"facebookDescription\" \/>/", $txt, $m ) ){
         $fbdesc = $m[1];
       }
-      // Fuel
-      if( preg_match( "/(Petrol|Diesel)/i", $fbdesc, $m ) ) $this->Fields->FuelType->set( strtolower( $m[1] ) );
       
       // Transmission
       if( preg_match( "/(Manual|Automatic)/i", $fbdesc, $m ) ) $this->Fields->Transmission->set( strtolower( $m[1] ) );
 
-      // Get the page as a DOM
-      require_once( "lib/simplehtmldom/simple_html_dom.php" );
-      $dom = str_get_html( $txt );
-     
-      if( !$dom ) return false;
-      
       // Parse the stats tables
       $aStats = array();
       $aFeatures = array();
-      foreach( $dom->find( "div.fpa-main" ) as $div ){
-        foreach( $div->find( "table" ) as $tbl ){
-          if( !$tbl ) continue;
-          foreach( $tbl->find( "tr" ) as $row ){
-            for( $i=0; $i<sizeof($tbl->find('tr')); $i++ ){
-              $th = $row->find("th",$i);
-              $td = $row->find("td",$i);
-              if( !$td ) continue;
-              if( !$th ) continue; 
-              $key = trim(strip_tags($th->innertext()));
-              $val = trim(strip_tags($td->innertext()));
-              if( $val == "Standard" ) $aFeatures[] = $key;
-              else $aStats[$key] = $val;
-            }
-          }
-        }
+      foreach( $dom->find( "div.fpaSpecifications__listItem" ) as $div ){
+        $key = (string)$div->find( "div.fpaSpecifications__term", 0 )->innerText();
+        $val = (string)$div->find( "div.fpaSpecifications__description", 0 )->innerText();
+          if( $val == "Standard" ) $aFeatures[] = $key;
+          else $aStats[$key] = $val;
       }
-      
+      /*
+      print_r( $aStats );
+      print_r( $aFeatures );
+      */
+
       // Description
-      $find = "p.sellerspecs-para";
+      $find = "section.fpaDescription";
       if( $dom->find($find,0)){
         $this->Fields->Description = trim(strip_tags($dom->find($find,0)->innertext()));
       }else{
@@ -102,7 +108,7 @@
        "urban_fuel_consumption" => "Urban mpg",
        "extraurban_fuel_consumption" => "Extra Urban mpg",
        "combined_fuel_consumption" => "Average mpg",
-       "zero_to_sixty_two" => "Acceleration (0-62mph)",
+       "zero_to_sixty_two" => "Acceleration (0-60mph)",
        "top_speed" => "Top speed",
        "power" => "Engine power",
        // "torque" => "Engine torque",

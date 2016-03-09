@@ -52,13 +52,6 @@
       $enableldaps = false;
       break;
   }
-  define( "ORACLEDB_HOST", "swl-its-dbms01.coventry.ac.uk" );
-  define( "ORACLEDB_HOST2", "rc-its-dbms01.coventry.ac.uk" );
-  define( "ORACLEDB_SERVICE", "qlxlive.coventry.ac.uk" );    
-  define( "ORACLEDB_USER", "oracleuser" );
-  define( "ORACLEDB_PORT", "1521" );
-  define( "ORACLEDB_PASS", 'OMGp4a$w0rd123' );
-  
   
   putenv("TZ=Europe/London");
   date_default_timezone_set('Europe/London');

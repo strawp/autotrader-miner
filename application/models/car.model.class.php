@@ -23,6 +23,7 @@
       $this->addField( Field::create( "lstMakeId", "allowcreatefk=1" ) );
       $this->addField( Field::create( "strCarModel", "display=0" ) );
       $this->addField( Field::create( "lstCarModelId", "allowcreatefk=1" ) );
+      $this->addField( Field::create( "lstBodyId", "allowcreatefk=1" ) );
       $this->addField( Field::create( "lstColourId" ) );
       $this->addField( Field::create( "cshPrice" ) );
       $this->addField( Field::create( "intDoors" ) );
