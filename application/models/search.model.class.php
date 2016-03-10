@@ -7,7 +7,7 @@
     
     function Search(){
       $this->Model( "Search" );
-      $this->addField( Field::create( "strUrl", "required=1" ) );
+      $this->addField( Field::create( "strUrl", "required=1;length=500" ) );
       $this->addField( Field::create( "strName", "required=0" ) );
       $this->addField( Field::create( "dtmLastRan" ) );
     }
@@ -51,17 +51,21 @@
       $url = $this->Fields->Url->toString();
       if( $this->debug ) echo $url."\n";
       list( $html, $inf ) = AutotraderConnector::getUrl( $url ); // file_get_contents( $url );
-      print_r( $html );
       print_r( $inf );
       $dom = str_get_html( $html );
       // $dom = file_get_html( $url );
-      $aSel = $dom->find( "option[class=selected],option[selected=selected]" );
+      $aSel = $dom->find( "button.is-selected" );
       $aName = array();
       foreach( $aSel as $sel ){
-        $attr = $sel->parent()->attr["name"];
-        if( $attr == "creditProfile" ) continue; 
-        $aName[] = trim( $attr.": ".$sel->innertext()."\n" );
+        $attr = $sel->find( "span.options-button__name", 0 )->innertext();
+        $val = $sel->find( "span.options-button__value", 0 )->innertext();
+        $val = strip_tags( $val );
+        $val = preg_replace( "/Any/", "", $val );
+        $val = preg_replace( "/  +/", " ", $val );
+        $val = trim( $val );
+        $aName[] = trim( $attr.": ".$val );
       }
+      print_r( $aName );
       $this->Fields->Name = join( ", ", $aName );
       echo $this->toString(); 
     }

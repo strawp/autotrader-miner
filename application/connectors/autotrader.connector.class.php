@@ -36,18 +36,30 @@
       // Desc
       $desc = (string)$dom->find( "section.fpaDescription", 0 )->innerText();
 
-      // Meta data
-      // if( preg_match( "/<meta name=\"bannerMetaData\" content=\"make=([^,]+),model=([^,]+),mileage=([0-9]+),year-of-manufacture=([0-9]{4})\"\/>/", $txt, $m ) ){
-      if( preg_match( "/<var data-oas-name=\"query-string\" data-oas-value=\"([\"]+)\"/", $txt, $m ) ){
-        $data = parse_str( url_decode( $m[1] ) );
-        print_r( $data );
-        $this->Fields->Make->set( $data["CAR_MAKE"] );
-        $this->Fields->CarModel->set( $data["CAR_MODEL"] );
-        $this->Fields->Year->set( $data["CAR_AGE"] );
-        $this->Fields->Body->set( $data["CAR_BODY"] );
-        $this->Fields->FuelType->set( $data["CAR_FUEL"] );
+      // Year
+      if( preg_match( "/keyFacts__item\">(\d+)<\/li>/", $page, $m ) ){
+        $this->Fields->Year->set( $m[1] );
       }
       
+      // Mileage
+      if( preg_match( "/keyFacts__item\">([,0-9]+) miles<\/li>/", $page, $m ) ){
+        $v = preg_replace( "/,/", "", $m[1] );
+        $this->Fields->Mileage->set( $v );
+      }
+
+      // Mileage
+      if( preg_match( "/keyFacts__item\">(Petrol|Diesel)<\/li>/", $page, $m ) ){
+        $this->Fields->FuelType->set( $m[1] );
+      }
+
+      // Some metadata
+      if( preg_match( "/var utag_data = {(.*?)};/", $page, $m ) ){
+        $data = json_decode( "{".$m[1]."}" );
+        $this->Fields->Make->set( $data->make );
+        $this->Fields->CarModel->set( $data->model );
+        if( !empty( $data->insurance_group ) ) $this->Fields->InsuranceGroup->set( $data->insurance_group );
+      }
+
       // Colour
       $c = new Colour();
       $dbr = $c->getAll();
