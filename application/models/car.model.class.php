@@ -28,6 +28,12 @@
       $this->addField( Field::create( "cshPrice" ) );
       $this->addField( Field::create( "intDoors" ) );
       $this->addField( Field::create( "intSeats" ) );
+      $this->addField( Field::create( "intHeight", "displayname=Height (mm)" ) );
+      $this->addField( Field::create( "intLength", "displayname=Length (mm)" ) );
+      $this->addField( Field::create( "intWheelbase", "displayname=Wheelbase (mm)" ) );
+      $this->addField( Field::create( "intWidth", "displayname=Width (mm)" ) );
+      $this->addField( Field::create( "intBootSpaceSeatsDown", "displayname=Boot Space, Seats Down (L)" ) );
+      $this->addField( Field::create( "intBootSpaceSeatsUp", "displayname=Boot Space, Seats Up (L)" ) );
       $this->addField( Field::create( "strTransmission" ) );
       $this->addField( Field::create( "strFuelType" ) );
       $this->addField( Field::create( "intCo2" ) );
@@ -36,6 +42,7 @@
       $this->addField( Field::create( "cnfHasMultifunctionSteeringWheel" ) );
       $this->addField( Field::create( "cnfHasPaddleshift" ) );
       $this->addField( Field::create( "cnfHasIsofix" ) );
+      $this->addField( Field::create( "cnfHasCruiseControl" ) );
       $this->addField( Field::create( "cnfHasAircon" ) );
       $this->addField( Field::create( "cnfHasCupholders" ) );
       $this->addField( Field::create( "cnfHasAuxInput" ) );
@@ -51,6 +58,8 @@
       $this->addField( Field::create( "intPower" ) );
       $this->addField( Field::create( "intTorque" ) );
       $this->addField( Field::create( "lstNoiseId" ) );
+      $this->addField( Field::create( "strDistanceStr", "afterAddColumnMethod=fillDistanceString" ) );
+      $this->addField( Field::create( "strInsuranceCategory", "afterAddColumnMethod=fillInsuranceCategory" ) );
       $this->addField( Field::create( "cshInsuranceQuote", "helphtml=If you get an insurance quote for this car you can enter it here and it will be taken into account when calculating annual cost of ownership" ) );
       $this->addField( Field::create( "cshFuelAndTaxCost", "helphtml=This assumes tax based on TC48 and TC49 type cars, registered after 2001 and more than a year old plus cost of running annual mileage for the car's fuel type" ) );
       $this->addField( Field::create( "cshAnnualCost", "helphtml=This is fuel and tax cost plus insurance quote (if there is one)" ) );
@@ -59,6 +68,8 @@
       $this->addField( Field::create( "dtmUpdatedAt" ) );
       $this->addField( Field::create( "dtmCreatedAt", "display=1" ) );
       $this->addField( Field::create( "bleActive", "default=1" ) );
+      $this->addField( Field::create( "txtDesktopPageCache", "display=0" ) );
+      $this->addField( Field::create( "txtMobilePageCache", "display=0" ) );
       $this->allowfieldselect = true;
       $this->gotofield="autotrader_number";
       $this->createongoto = true;
@@ -74,12 +85,59 @@
 
     function carFinally(){
       if( $this->id == 0 ) $this->fetchDetails();
+      // $this->fillDistanceString();
       $this->setAnnualCostOfOwnership();
       $this->setTcoThreeYears();
       $this->setFeatures();
       $this->setLists();
       $this->setApproxEngineSize();
       $this->setNoiseId();
+    }
+
+    // Re-parse page HTML
+    function recache($aArgs=array()){
+      $db = new DB();
+      $db->query( "SELECT * FROM car" );
+      while( $row = $db->fetchRow() ){
+        $c = new Car();
+        $c->initFromRow($row);
+        $c->fetchDetails();
+        $c->save();
+      }
+    }
+    
+    function fillInsuranceCategory(){
+      echo "Backfilling insurance category\n";
+      $db = new DB();
+      $db->query( "SELECT * FROM car" );
+      while( $row = $db->fetchRow() ){
+        $c = new Car();
+        $c->initFromRow($row);
+        $txt = $c->Fields->DesktopPageCache->value;
+        if( preg_match( "/CATEGORY <i class=\"category icon ([a-z])\">/", $txt, $m ) ){
+          print_r( $m );
+          $c->Fields->InsuranceCategory->set( strtoupper($m[1]) );
+          $c->save();
+        }
+      }
+    }
+
+    function fillDistanceString(){
+      echo "Backfilling distance strings\n";
+      $db = new DB();
+      $db->query( "SELECT * FROM car" );
+      while( $row = $db->fetchRow() ){
+        $c = new Car();
+        $c->initFromRow($row);
+        $txt = $c->Fields->DesktopPageCache->value;
+        if( preg_match( "/(\d+) miles from ([A-Z]+[0-9]+ [0-9]+[A-Z]+)/", $txt, $m ) ){
+          print_r( $m );
+          $pc = $m[0];
+          echo $pc."\n";
+          $c->Fields->DistanceStr->set( $pc );
+          $c->save();
+        }
+      }
     }
 
     function fetchDetails(){
@@ -107,6 +165,7 @@
       $feat .= "\n".$this->Fields->Description->toString();
       $feat = str_replace( "&nbsp;", "", $feat );
       $this->setHasIsofix();
+      $this->setHasCruiseControl();
       $this->setHasAircon();
       $this->setHasCupholders();
       if(preg_match("/\baux(iliary)?\b/i",$feat)) $this->Fields->HasAuxInput = true;
@@ -163,6 +222,14 @@
       $desc .= "\n".$this->Fields->Description->toString();
       if( preg_match( "/\bisofix\b/i", $desc, $m ) ){ 
         $this->Fields->HasIsofix = true;
+      }
+    }
+
+    function setHasCruiseControl(){
+      $desc = $this->Fields->Features->toString();
+      $desc .= "\n".$this->Fields->Description->toString();
+      if( preg_match( "/\bcruise control\b/i", $desc, $m ) ){ 
+        $this->Fields->HasCruiseControl = true;
       }
     }
 

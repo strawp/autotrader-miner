@@ -7,7 +7,7 @@
     
     function Search(){
       $this->Model( "Search" );
-      $this->addField( Field::create( "strUrl", "required=1;length=500" ) );
+      $this->addField( Field::create( "strUrl", "required=1;length=1000" ) );
       $this->addField( Field::create( "strName", "required=0" ) );
       $this->addField( Field::create( "dtmLastRan" ) );
     }
@@ -23,14 +23,19 @@
         echo "Getting page ".$this->getName()." $currentpage of $totalpages\n";
         if( $this->debug ) echo $url."\n";
         list( $html, $inf ) = AutotraderConnector::getUrl( $url ); // file_get_contents( $url );
-        /*print_r( $inf );
-        print_r( $html );*/
+        if( $inf['http_code'] == '204' ){
+          die( "HTTP error 204 - probably been blocked by Autotrader" );
+        }
+        /*
+        print_r( $inf );
+        print_r( $html );
+        */
         $dom = str_get_html( $html );
         $tp = $dom->find( "li.paginationMini__count strong", 1 );
         if( $tp ) $totalpages = intval($tp->innertext());
         foreach( $dom->find( "h1.search-result__title a" ) as $link ){
-          if( $this->debug ) echo "Found: ".$link->href."\n";
           if( !preg_match( AUTOTRADER_MATCH, $link->href, $m ) ) continue;
+          if( $this->debug ) echo "Found: ".$link->href."\n";
           if( $this->debug ) echo "ID: ".$m[1]."\n";
           Car::getByAutotraderNumber( $m[1] );
         }

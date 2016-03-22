@@ -96,7 +96,7 @@
         $this->findblanks = true;
       }
       $value = convert_smart_quotes( $value );
-      $this->value = stripslashes( substr( $value, 0, 255 ) );
+      $this->value = stripslashes( substr( $value, 0, intval($this->length) ) );
       
       // Check the lengths of all the fields
       $this->truncate();

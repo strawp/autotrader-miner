@@ -1,13 +1,19 @@
 <?php
   class AutotraderConnector extends Car {
     
-    static function getUrl($url){
+    static function getUrl($url, $mobile=false){
       $ch = curl_init( $url );
+      if( $mobile ) $ua = MOBILE_USERAGENT;
+      else $ua = DESKTOP_USERAGENT;
+      $ua .= " /v".rand(1000,9999); // Add randomness to the end
       curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
       curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-      curl_setopt($ch, CURLOPT_USERAGENT, "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:43.0) Gecko/20100101 Firefox/43.0" );
+      curl_setopt($ch, CURLOPT_USERAGENT, $ua ); 
       $txt = curl_exec( $ch );
       $inf = curl_getinfo($ch);
+      if( $inf["http_code"] == "204" ){
+        echo "Error code 204 detected - probably blocked by rate limiting!\n";
+      }
       return array( $txt, $inf );
     }
     
@@ -15,24 +21,53 @@
       require_once( "lib/simplehtmldom/simple_html_dom.php" );
       $this->debug = true;
       if( $this->Fields->AutotraderNumber->toString() == "" ) return;
-      $url = AUTOTRADER_BASE.$this->Fields->AutotraderNumber->toString();
-      if( $this->debug ) echo "Getting new car: $url\n";
-      list( $txt, $inf ) = self::getUrl( $url );
-      $dom = str_get_html( $txt );
-      $this->Fields->LastChecked->value = time();
-      if( !$inf || $inf["http_code"] == "404" ){
-        $this->Fields->Active = false;
-        return false;
-      }
+      if( trim($this->Fields->DesktopPageCache->value) == '' || trim($this->Fields->MobilePageCache->value) == '' ){
+        $url = AUTOTRADER_BASE.$this->Fields->AutotraderNumber->toString();
+        if( $this->debug ) echo "Getting new car: $url\n";
+        list( $txt, $inf ) = self::getUrl( $url );
+        // print_r( $inf );
+        if( !$inf || $inf["http_code"] == "301" ){
+          $this->Fields->Active = false;
+          return false;
+        }
 
-      $page = $txt;
-  
+        $url = AUTOTRADER_MOBILE_BASE.$this->Fields->AutotraderNumber->toString();
+        if( $this->debug ) echo "Getting new car: $url\n";
+        list( $mobpage, $inf ) = self::getUrl( $url, true );
+        /*
+        print_r( $inf );
+        print_r( $mobpage );
+        */
+        $this->Fields->LastChecked->value = time();
+        $page = $txt;
+    
+        $this->Fields->DesktopPageCache->set( $page );
+        $this->Fields->MobilePageCache->set( $mobpage );
+      }else{
+        $page = $this->Fields->DesktopPageCache->toString();
+        $mobpage = $this->Fields->MobilePageCache->toString();
+      }
+      // echo $page;
+      $dom = str_get_html( $page );
+      $mobdom = str_get_html( $mobpage );
+
       // Name
       $str = (string)$dom->find( "title", 0 )->innerText();
       if( $this->debug ) echo "Name: ".$str."\n";
       $this->Fields->Name = $str;
       // if( preg_match( "/<span id=\"fullPageMainTitle\"[^>]*>([^<]+)<\/span>/", $txt, $m ) ) $this->Fields->Name->set( $m[1] );
      
+      // Distance
+      if( preg_match( "/(\d+) miles from ([A-Z]{2}[0-9]+ [0-9]+[A-Z]{2})/", $page, $m ) ){
+        $pc = $m[0];
+        $c->Fields->DistanceStr->set( $pc );
+      }
+
+      // Insurance Category
+      if( preg_match( "/CATEGORY <i class=\"category icon ([a-z])\">/", $page, $m ) ){
+        $c->Fields->InsuranceCategory->set( strtoupper($m[1]) );
+      }
+      
       // Desc
       $desc = (string)$dom->find( "section.fpaDescription", 0 )->innerText();
 
@@ -47,7 +82,7 @@
         $this->Fields->Mileage->set( $v );
       }
 
-      // Mileage
+      // Fuel
       if( preg_match( "/keyFacts__item\">(Petrol|Diesel)<\/li>/", $page, $m ) ){
         $this->Fields->FuelType->set( $m[1] );
       }
@@ -82,7 +117,7 @@
       // Price
       $this->Fields->Price->set( (string)$dom->find( "span.priceTitle__price", 0 )->innerText() );
       
-      if( preg_match( "/<meta name=\"description\" content='([^']+)' class=\"facebookDescription\" \/>/", $txt, $m ) ){
+      if( preg_match( "/<meta name=\"description\" content='([^']+)' class=\"facebookDescription\" \/>/", $page, $m ) ){
         $fbdesc = $m[1];
       }
       
@@ -92,29 +127,46 @@
       // Parse the stats tables
       $aStats = array();
       $aFeatures = array();
+
+      // Get stuff off mobile site
+      foreach( $mobdom->find( "section#fpa_techspec_container li" ) as $item ){
+        $oKey = $item->find( "div.left-align", 0 );
+        if( $oKey ){
+          $key = trim($oKey->innerText());
+          $oVal = $item->find( "div.right-align", 0 );
+          if( $oVal ){
+            $val = trim($oVal->innerText());
+            $aStats[$key] = $val;
+          }
+        }
+      }
+
       foreach( $dom->find( "div.fpaSpecifications__listItem" ) as $div ){
         $key = (string)$div->find( "div.fpaSpecifications__term", 0 )->innerText();
+        $key = strip_tags( $key );
         $val = (string)$div->find( "div.fpaSpecifications__description", 0 )->innerText();
-          if( $val == "Standard" ) $aFeatures[] = $key;
-          else $aStats[$key] = $val;
+        if( $val == "Standard" ) $aFeatures[] = $key;
+        else $aStats[$key] = $val;
       }
-      /*
-      print_r( $aStats );
-      print_r( $aFeatures );
-      */
-
+      
       // Description
       $find = "section.fpaDescription";
       if( $dom->find($find,0)){
         $this->Fields->Description = trim(strip_tags($dom->find($find,0)->innertext()));
       }else{
-        echo "ERROR: Didn't find $find in:\n\n $txt\n\n";
+        echo "ERROR: Didn't find $find in:\n\n $page\n\n";
       }
       
       $aMap = array(
-       "doors" => "No. of doors",
-       "seats" => "No. of seats",
-       "co2" => "CO2 rating (g/km)",
+       "doors" => "Number of doors",
+       "seats" => "Number of seats",
+       "boot_space_seats_down" => "Boot space (seats down)",
+       "boot_space_seats_up" => "Boot space (seats up)",
+       "height" => "Height",
+       "length" => "Length",
+       "wheelbase" => "Wheelbase",
+       "width" => "Width",
+       "co2" => "CO2 emissions",
        // "insurance_group" => "Insurance group",
        "tax_band_id" => "Vehicle tax band",
        "urban_fuel_consumption" => "Urban mpg",
@@ -146,7 +198,8 @@
       curl_setopt( $ch, CURLOPT_NOBODY, true );
       $txt = curl_exec( $ch );
       $inf = curl_getinfo($ch);
-      if( $inf["http_code"] != "200" ){
+      if( $inf["http_code"] == "204" ) die ( "Error 204 - blocked by rate limiting\n" );
+      if( $inf["http_code"] == "301" ){
         $this->Fields->Active = false;
         return false;
       }
