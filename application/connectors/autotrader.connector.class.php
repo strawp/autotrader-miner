@@ -229,9 +229,9 @@
       echo "Set $inactivecount inactive\n";
     }
     static function getColours(){
-      $url = "http://".AUTOTRADER_DOMAIN."/search/used/cars/"; 
+      $url = "http://".AUTOTRADER_DOMAIN."/used-cars/"; 
       $txt = file_get_contents( $url );
-      if( !preg_match( "/<select id=\"searchVehiclesColour\"[^>]+>(\s*<option [^>]+>([^<]+)<\/option>\s*)+<\/select>/s", $txt, $m ) ) return false;
+      if( !preg_match( "/<select[^>]+name=\"colour\">(\s*<option [^>]+>([^<]+)<\/option>\s*)+<\/select>/s", $txt, $m ) ) return false;
       if( !preg_match_all( "/<option[^>]+>([^<\(]+) \(\d+\).*?<\/option>/", $m[0], $m ) ) return false;
       return $m[1];
     }
