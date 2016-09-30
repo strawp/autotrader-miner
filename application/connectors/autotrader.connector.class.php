@@ -20,9 +20,11 @@
     function fetchDetails(){
       require_once( "lib/simplehtmldom/simple_html_dom.php" );
       $this->debug = true;
+      if( $this->debug ) echo "Getting new details for ".$this->Fields->AutotraderNumber->toString()."\n";
       if( $this->Fields->AutotraderNumber->toString() == "" ) return;
       if( trim($this->Fields->DesktopPageCache->value) == '' || trim($this->Fields->MobilePageCache->value) == '' ){
-        $url = AUTOTRADER_BASE.$this->Fields->AutotraderNumber->toString();
+        $postcode = $this->Fields->Postcode->toString() != '' ? $this->Fields->Postcode->toString() : SEARCH_POSTCODE;
+        $url = AUTOTRADER_BASE.$this->Fields->AutotraderNumber->toString()."/postcode/".$postcode;
         if( $this->debug ) echo "Getting new car: $url\n";
         list( $txt, $inf ) = self::getUrl( $url );
         // print_r( $inf );
@@ -60,12 +62,13 @@
       // Distance
       if( preg_match( "/(\d+) miles from ([A-Z]{2}[0-9]+ [0-9]+[A-Z]{2})/", $page, $m ) ){
         $pc = $m[0];
-        $c->Fields->DistanceStr->set( $pc );
+        $this->Fields->DistanceStr->set( $pc );
+        $this->Fields->Distance->set( $m[1] );
       }
 
       // Insurance Category
-      if( preg_match( "/CATEGORY <i class=\"category icon ([a-z])\">/", $page, $m ) ){
-        $c->Fields->InsuranceCategory->set( strtoupper($m[1]) );
+      if( preg_match( "/svg_icons\/fpa.svg#icon-cat-([a-z])\">/", $page, $m ) ){
+        $this->Fields->InsuranceCategory->set( strtoupper($m[1]) );
       }
       
       // Desc
@@ -115,7 +118,8 @@
       }
 
       // Price
-      $this->Fields->Price->set( (string)$dom->find( "span.priceTitle__price", 0 )->innerText() );
+      $e = $dom->find( "section.priceTitle__price", 0 );
+      if( $e ) $this->Fields->Price->set( (string)$e->innerText() );
       
       if( preg_match( "/<meta name=\"description\" content='([^']+)' class=\"facebookDescription\" \/>/", $page, $m ) ){
         $fbdesc = $m[1];
@@ -209,7 +213,7 @@
     static function determineAllActive($since="-2 days"){
       if( !is_int( $since ) ) $since = strtotime( $since );
       $db = new DB();
-      $db->query( "SELECT * FROM car WHERE active = 1 AND last_checked < $since" );
+      $db->query( "SELECT * FROM car WHERE active = 1 AND last_checked < $since order by last_checked" );
       echo $db->numrows." cars to check if still active\n"; 
       $inactivecount = 0;
       $i = 1;

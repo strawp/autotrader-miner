@@ -58,6 +58,8 @@
       $this->addField( Field::create( "intPower" ) );
       $this->addField( Field::create( "intTorque" ) );
       $this->addField( Field::create( "lstNoiseId" ) );
+      $this->addField( Field::create( "strPostcode", "displayname=Search Postcode" ) );
+      $this->addField( Field::create( "intDistance" ) );
       $this->addField( Field::create( "strDistanceStr", "afterAddColumnMethod=fillDistanceString" ) );
       $this->addField( Field::create( "strInsuranceCategory", "afterAddColumnMethod=fillInsuranceCategory" ) );
       $this->addField( Field::create( "cshInsuranceQuote", "helphtml=If you get an insurance quote for this car you can enter it here and it will be taken into account when calculating annual cost of ownership" ) );
@@ -80,7 +82,7 @@
 
     function setHtmFields(){
       // $this->aFields["url"]->value = "<a href=\"".AUTOTRADER_BASE.$this->aFields["autotrader_number"]->toString()."\">".strip_tags($this->Fields->Name->toString())."</a>";
-      $this->aFields["url"]->value = "<a href=\"".AUTOTRADER_BASE.$this->aFields["autotrader_number"]->toString()."\">View on Autotrader</a>";
+      $this->aFields["url"]->value = "<a href=\"".preg_replace( "/http:\/\/[^.]+\./", "http://", AUTOTRADER_BASE ).$this->aFields["autotrader_number"]->toString()."\">View on Autotrader</a>";
     }
 
     function carFinally(){
@@ -97,7 +99,7 @@
     // Re-parse page HTML
     function recache($aArgs=array()){
       $db = new DB();
-      $db->query( "SELECT * FROM car" );
+      $db->query( "SELECT * FROM car where created_at > 1464000569" );
       while( $row = $db->fetchRow() ){
         $c = new Car();
         $c->initFromRow($row);
@@ -109,7 +111,8 @@
     function fillInsuranceCategory(){
       echo "Backfilling insurance category\n";
       $db = new DB();
-      $db->query( "SELECT * FROM car" );
+      $db->query( "SELECT * FROM car where insurance_category = '' and desktop_page_cache like '%category icon%'" );
+      echo "Found ".$db->numrows."\n";
       while( $row = $db->fetchRow() ){
         $c = new Car();
         $c->initFromRow($row);
@@ -271,9 +274,10 @@
       return $csh->value + $this->Fields->FuelAndTaxCost->value;
     }
     
-    static function getByAutotraderNumber( $number ){
+    static function getByAutotraderNumber( $number, $postcode='' ){
       $car = new Car();
       $car->retrieveByClause( "WHERE autotrader_number = '".intval($number)."'" );
+      $car->Fields->Postcode = $postcode;
       if( $car->id == 0 ){
         $car->debug = true;
         $car->Fields->AutotraderNumber = $number;

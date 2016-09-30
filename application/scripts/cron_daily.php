@@ -16,7 +16,7 @@
   echo "Starting cron_daily at ".date( SITE_DATETIMEFORMAT )."\n";
   
   // Backup DB
-  $rlt = $db->dumpTablesToGzipExcluding( array("finance") );
+  // $rlt = $db->dumpTablesToGzipExcluding( array("finance") );
   
   // Clear up tmp folder, run every garbageCollect method
   doGarbageCollection();

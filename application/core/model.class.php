@@ -3549,6 +3549,7 @@
       }
       if( $this->debug ) echo "Sending...\n";
       $mailer->Send();
+      copy( $tmpfile, "/home/iain/Dropbox/cars/exports/".$this->id."_".basename( $name ).".html" );
       unlink( $tmpfile );
       return true;
     }

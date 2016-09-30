@@ -217,11 +217,13 @@
     static function runReports(){
       if( self::$debug ) echo "Running reports\n";
       ini_set( "memory_limit", "500M" );
-      
+     
+      /*
       // Only run on weekdays
       if( date( "N" ) > 5 ) return true;
       
       if( self::$debug ) echo "Day OK\n";
+      */
       $db = new DB();
       
       // Get Lookup of frequencies

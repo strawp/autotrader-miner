@@ -16,11 +16,16 @@
   set_include_path( get_include_path().PATH_SEPARATOR.$path );
   define( "SITE_WEBROOT", $path );
   define( "SITE_COREDIR", trim(strtolower(dirname(__FILE__))) );
-  define( "SITE_TEMPDIR", $path."/tmp/" );
+  define( "SITE_TEMPDIR", "/tmp/" );
+  define( "SEARCH_POSTCODE", "AB1234C" ); // Change this to your postcode
   define( "AUTOTRADER_DOMAIN", "www2.autotrader.co.uk" );
   define( "AUTOTRADER_BASE", "http://".AUTOTRADER_DOMAIN."/classified/advert/" );
+  define( "AUTOTRADER_MOBILE_DOMAIN", "www.autotrader.co.uk" );
+  define( "AUTOTRADER_MOBILE_BASE", "http://".AUTOTRADER_MOBILE_DOMAIN."/classified/advert/" );
   define( "AUTOTRADER_MATCH", "/http:\/\/www\d*\.autotrader\.co\.uk\/classified\/advert\/([0-9]+)/" );
   if( !isset( $_SERVER["SERVER_NAME"] ) ) $_SERVER["SERVER_NAME"] = "localhost";
+  define( "DESKTOP_USERAGENT", "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:43.0) Gecko/20100101 Firefox/43.0" );
+  define( "MOBILE_USERAGENT", "Mozilla/5.0 (Android 5.1.1; Mobile; rv:45.0) Gecko/45.0 Firefox/45.0" );
   
   // Which installation
   switch( SITE_COREDIR ){
@@ -44,10 +49,10 @@
       define( "SITE_AUTH", "db" );
       
       // Paths
-      define( "PHP_PATH", "c:\\xampp\\php\\php.EXE" );
+      define( "PHP_PATH", "/usr/bin/php" );
       define( "WKPDF_PATH", "C:\\wkhtmltopdf\\wkhtmltopdf.exe" );
-      define( "MYSQLDUMP_PATH", "c:\\xampp\\mysql\\bin\\mysqldump.exe" );
-      define( "GZIP_PATH", "c:\\bin\\gzip.exe" );
+      define( "MYSQLDUMP_PATH", "/usr/bin/mysqldump" );
+      define( "GZIP_PATH", "/bin/gzip" );
       error_reporting( E_ALL & ~E_DEPRECATED ); // & ~E_NOTICE & ~E_STRICT );
       $enableldaps = false;
       break;
@@ -73,7 +78,7 @@
     case "simple.example.com":
       define( "SITE_DEFAULTHOST", $_SERVER["SERVER_NAME"] );
       define( "SITE_DEFAULTBASE", "https://".SITE_DEFAULTHOST."/" );
-      define( "SITE_BASE", SITE_PROTOCOL."://".$_SERVER["SERVER_NAME"].SITE_ROOT );
+      define( "SITE_BASE", SITE_PROTOCOL."://".$_SERVER["SERVER_NAME"].':'.$_SERVER['SERVER_PORT'].SITE_ROOT );
       define( "SITE_REPLYTOHOST", $_SERVER["SERVER_NAME"] );      // Hostname for reply-to address
       define( "SITE_NAME", "Simple intranet" );
       define( "SITE_TAGLINE", "For when you're just fed up looking at all those menus" );
@@ -83,7 +88,7 @@
     
     default:
       define( "SITE_DEFAULTHOST", "localhost" );
-      define( "SITE_DEFAULTBASE", "http://".SITE_DEFAULTHOST."/" );
+      define( "SITE_DEFAULTBASE", "http://".SITE_DEFAULTHOST.":81/" );
 
       if( $_SERVER["SERVER_NAME"] == "localhost" ){
         define( "SITE_BASE", SITE_DEFAULTBASE );
@@ -117,10 +122,10 @@
   
   define( "SITE_EMAILHEADER", "" );
   define( "SITE_EMAILFOOTER", "---\nThis is an automated email sent by ".SITE_NAME." (".SITE_BASE.")" );
-  define( "SITE_EMAILDOMAIN", "example.com" );
+  define( "SITE_EMAILDOMAIN", "strawp.net" );
   define( "SITE_ADMINEMAIL", "admin@".SITE_EMAILDOMAIN );
-  define( "SMTP_HOST", "mail.example.com" );
-  define( "SITE_FROMADDRESS", "intranet@example.com" );    // "From" address of all outgoing emails. Preferably somewhere that ignores bounced mail
+  define( "SMTP_HOST", "strawp.net" );
+  define( "SITE_FROMADDRESS", "cars@strawp.net" );    // "From" address of all outgoing emails. Preferably somewhere that ignores bounced mail
   define( "SITE_REPLYTOALIAS", "intranet" );                      // A script to handle replied to emails or a person with time on their hands
   define( "SITE_REPLYTODELIM", "+" );                         // Character which separates an alias from the rest of the user name in an email address
   define( "SITE_DATEFORMAT", "j M Y" );

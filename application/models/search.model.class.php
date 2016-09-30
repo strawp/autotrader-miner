@@ -26,6 +26,12 @@
         if( $inf['http_code'] == '204' ){
           die( "HTTP error 204 - probably been blocked by Autotrader" );
         }
+        // Extract postcode
+        if( preg_match( "/\/postcode\/([^\/]+)/", $url, $m ) ){
+          $postcode = $m[1];
+        }else{
+          $postcode = '';
+        }
         /*
         print_r( $inf );
         print_r( $html );
@@ -37,7 +43,7 @@
           if( !preg_match( AUTOTRADER_MATCH, $link->href, $m ) ) continue;
           if( $this->debug ) echo "Found: ".$link->href."\n";
           if( $this->debug ) echo "ID: ".$m[1]."\n";
-          Car::getByAutotraderNumber( $m[1] );
+          Car::getByAutotraderNumber( $m[1], $postcode );
         }
         $currentpage++;
       }while( $totalpages >= $currentpage );
@@ -78,7 +84,7 @@
     static function runAllSince( $date ){
       if( !is_int( $date ) ) $date = strtotime( $date );
       $db = new DB();
-      $sql = "SELECT * FROM search WHERE last_ran is null or last_ran < ".$date;
+      $sql = "SELECT * FROM search WHERE last_ran is null or last_ran < ".intval( $date )." order by last_ran";
       echo "Running ".$db->numrows." searches\n";
       $db->query( $sql );
       while( $row = $db->fetchRow() ){

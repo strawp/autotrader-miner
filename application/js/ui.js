@@ -304,6 +304,10 @@ function initSearchPage(){
     $("form.search div.controls").before( "<div class=\"advanced_toggle\">Show all selected fields</div>" );
     $("form.search div.advanced_toggle").click( toggleAdvancedSearch );
   }
+
+  // Confirm cells
+  $("table.list tr td.cnf").css("text-indent", "-999em").css("background-image", "url("+globalSettings.site_root+"img/icons/tick.png)").css("background-repeat", "no-repeat").css("width", "20px;").css("background-position", "center");
+  $("table.list tr td.cnf:contains('Not confirmed')").css("background-image", "url( "+ globalSettings.site_root+"img/icons/cross.png)");
 }
 
 // Get a statistical summary of the search on this page
